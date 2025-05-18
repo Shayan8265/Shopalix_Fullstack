@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Shopalix</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="home.html"><img src="images/logo.png" alt="Shopalix Logo" class="navbar-logo" /></a>
+    <a href="home.html">Home</a>
+  </nav>
+
+  <button onclick="toggleDarkMode()" class="dark-toggle">🌓 Toggle Dark Mode</button>
+
+  <main>
+    <h2 class="section-title">Admin Dashboard</h2>
+
+    <section class="card" id="login-section">
+      <h3>Admin Login</h3>
+      <input type="text" id="admin-username" placeholder="Username" />
+      <input type="password" id="admin-password" placeholder="Password" />
+      <button id="admin-login-btn">Login</button>
+      <p id="login-error" style="color:red;"></p>
+    </section>
+
+    <section class="card" id="product-manager" style="display:none;">
+      <h3>Manage Products</h3>
+
+      <form id="product-form">
+        <input type="hidden" id="product-id" />
+        <input type="text" id="product-name" placeholder="Name" required />
+        <input type="number" id="product-price" placeholder="Price (number)" required />
+        <input type="text" id="product-condition" placeholder="Condition" required />
+        <input type="text" id="product-image" placeholder="Image URL or path" required />
+        <input type="text" id="product-category" placeholder="Category" required />
+        <button type="submit">Save Product</button>
+        <button type="button" id="product-cancel-btn">Cancel</button>
+      </form>
+
+      <h4>Existing Products</h4>
+      <div id="products-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "/api/products";
+    let authHeader = null;
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      document.querySelectorAll(".card").forEach(el => el.classList.toggle("dark-card"));
+    }
+
+    // Encode credentials for Basic Auth
+    function makeAuthHeader(username, password) {
+      return "Basic " + btoa(username + ":" + password);
+    }
+
+    // Show error message
+    function showError(msg) {
+      $("#login-error").text(msg);
+    }
+
+    // Login handler
+    $("#admin-login-btn").on("click", function() {
+      const username = $("#admin-username").val().trim();
+      const password = $("#admin-password").val().trim();
+
+      if (username === "Shayan8265" && password === "123456") {
+        authHeader = makeAuthHeader(username, password);
+        $("#login-section").hide();
+        $("#product-manager").show();
+        loadProducts();
+      } else {
+        showError("Invalid username or password.");
+      }
+    });
+
+    // Load products list from backend
+    function loadProducts() {
+      $.ajax({
+        url: API_BASE + "/",
+        headers: { Authorization: authHeader },
+        success: function(products) {
+          renderProducts(products);
+        },
+        error: function() {
+          alert("Failed to load products.");
+        }
+      });
+    }
+
+    // Render products list in admin UI
+    function renderProducts(products) {
+      const container = $("#products-list");
+      container.empty();
+
+      if (products.length === 0) {
+        container.append("<p>No products found.</p>");
+        return;
+      }
+
+      products.forEach(prod => {
+        const prodDiv = $(`
+          <div class="product-card" style="border:1px solid #ccc; margin-bottom:10px; padding:10px;">
+            <strong>${prod.name}</strong> ($${prod.price}) - <em>${prod.condition}</em> - <small>${prod.category}</small><br/>
+            <img src="${prod.image}" alt="${prod.name}" style="width:80px; height:auto; margin:5px 0;" />
+            <br/>
+            <button class="edit-btn" data-id="${prod._id}">Edit</button>
+            <button class="delete-btn" data-id="${prod._id}">Delete</button>
+          </div>
+        `);
+        container.append(prodDiv);
+      });
+    }
+
+    // Clear form
+    function clearForm() {
+      $("#product-id").val("");
+      $("#product-name").val("");
+      $("#product-price").val("");
+      $("#product-condition").val("");
+      $("#product-image").val("");
+      $("#product-category").val("");
+    }
+
+    // Populate form for editing
+    $(document).on("click", ".edit-btn", function() {
+      const id = $(this).data("id");
+      $.ajax({
+        url: API_BASE + "/",
+        headers: { Authorization: authHeader },
+        success: function(products) {
+          const prod = products.find(p => p._id === id);
+          if (prod) {
+            $("#product-id").val(prod._id);
+            $("#product-name").val(prod.name);
+            $("#product-price").val(prod.price);
+            $("#product-condition").val(prod.condition);
+            $("#product-image").val(prod.image);
+            $("#product-category").val(prod.category);
+          }
+        },
+        error: function() {
+          alert("Failed to load product details.");
+        }
+      });
+    });
+
+    // Cancel editing
+    $("#product-cancel-btn").on("click", function() {
+      clearForm();
+    });
+
+    // Save (create or update) product
+    $("#product-form").on("submit", function(e) {
+      e.preventDefault();
+
+      const id = $("#product-id").val();
+      const data = {
+        name: $("#product-name").val().trim(),
+        price: parseFloat($("#product-price").val()),
+        condition: $("#product-condition").val().trim(),
+        image: $("#product-image").val().trim(),
+        category: $("#product-category").val().trim(),
+      };
+
+      if (!data.name || !data.price || !data.condition || !data.image || !data.category) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      if (id) {
+        // Update product
+        $.ajax({
+          url: API_BASE + "/" + id,
+          method: "PUT",
+          headers: { Authorization: authHeader },
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function() {
+            alert("Product updated!");
+            clearForm();
+            loadProducts();
+          },
+          error: function() {
+            alert("Failed to update product.");
+          }
+        });
+      } else {
+        // Create product
+        $.ajax({
+          url: API_BASE,
+          method: "POST",
+          headers: { Authorization: authHeader },
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function() {
+            alert("Product created!");
+            clearForm();
+            loadProducts();
+          },
+          error: function() {
+            alert("Failed to create product.");
+          }
+        });
+      }
+    });
+
+    // Delete product
+    $(document).on("click", ".delete-btn", function() {
+      if (!confirm("Are you sure you want to delete this product?")) return;
+      const id = $(this).data("id");
+
+      $.ajax({
+        url: API_BASE + "/" + id,
+        method: "DELETE",
+        headers: { Authorization: authHeader },
+        success: function() {
+          alert("Product deleted!");
+          loadProducts();
+        },
+        error: function() {
+          alert("Failed to delete product.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

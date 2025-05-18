@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Products - Shopalix</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- ✅ Navbar -->
+  <nav class="navbar">
+    <a href="home.html"><img src="images/logo.png" alt="Shopalix Logo" class="navbar-logo" /></a>
+    <a href="home.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="account.html">Account</a>
+    <a href="chat.html">Support</a>
+    <a href="admin.html">Admin</a>
+    <span class="spacer"></span>
+    <a href="#" class="logout-link" onclick="logout()">Log Out</a>
+    <form class="search-form" onsubmit="return false;">
+      <input type="text" id="search-bar" placeholder="Search products..." />
+      <div id="suggestions" class="suggestions-box"></div>
+    </form>
+    <a href="cart.html" class="cart-link">Cart <span id="cart-count">0</span></a>
+  </nav>
+
+  <button onclick="toggleDarkMode()" class="dark-toggle">🌓 Toggle Dark Mode</button>
+
+  <!-- ✅ Category Grid -->
+  <main>
+    <h2 class="section-title">Choose a Product Category</h2>
+    <section class="grid">
+      <div class="card">
+        <img src="images/category-electronics.jpg" alt="Electronics" />
+        <h3>Electronics</h3>
+        <p>Phones, laptops, smartwatches & more</p>
+        <a href="electronics.html"><button>Explore</button></a>
+      </div>
+      <div class="card">
+        <img src="images/category-fashion.jpg" alt="Fashion" />
+        <h3>Fashion</h3>
+        <p>Clothing, shoes & accessories</p>
+        <a href="fashion.html"><button>Explore</button></a>
+      </div>
+      <div class="card">
+        <img src="images/category-books.jpg" alt="Books" />
+        <h3>Books</h3>
+        <p>Fiction, programming, biographies</p>
+        <a href="books.html"><button>Explore</button></a>
+      </div>
+      <div class="card">
+        <img src="images/category-toys.jpg" alt="Toys" />
+        <h3>Toys</h3>
+        <p>Educational toys and games</p>
+        <a href="toys.html"><button>Explore</button></a>
+      </div>
+      <div class="card">
+        <img src="images/category-household.jpg" alt="Household" />
+        <h3>Household Goods</h3>
+        <p>Kitchen, cleaning & small appliances</p>
+        <a href="household.html"><button>Explore</button></a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ Footer -->
+  <footer>
+    <p>&copy; 2025 Shopalix. All rights reserved.</p>
+  </footer>
+
+  <!-- ✅ Logout Script -->
+  <script>
+    function logout() {
+      if (confirm("Are you sure you want to log out?")) {
+        localStorage.removeItem("userEmail");
+        window.location.href = "index.html";
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      document.querySelectorAll(".card").forEach(el => el.classList.toggle("dark-card"));
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+    }
+  </script>
+
+</body>
+</html>

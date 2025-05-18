@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Electronics - Shopalix</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="home.html"><img src="images/logo.png" alt="Shopalix Logo" class="navbar-logo" /></a>
+    <a href="home.html">Home</a>
+    <a href="products.html">All Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="account.html">Account</a>
+    <a href="chat.html">Support</a>
+    <a href="admin.html">Admin</a>
+    <span class="spacer"></span>
+    <form class="search-form" onsubmit="return false;">
+      <input type="text" id="search-bar" placeholder="Search products..." />
+      <div id="suggestions" class="suggestions-box"></div>
+    </form>
+    <a href="cart.html" class="cart-link">Cart <span id="cart-count">0</span></a>
+  </nav>
+
+  <!-- Dark Mode Toggle -->
+  <button onclick="toggleDarkMode()" class="dark-toggle">🌓 Toggle Dark Mode</button>
+
+  <!-- Product Section -->
+  <main>
+    <h2 class="section-title">Electronics</h2>
+    <section class="grid" id="product-grid">
+      <p>Loading products...</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Shopalix. All rights reserved.</p>
+  </footer>
+
+  <!-- Script to Fetch and Display Products -->
+  <script>
+    const API_BASE = "/api";
+
+    function renderProductCard(product) {
+      // Create HTML for a product card
+      return `
+        <div class="card">
+          <img src="${product.image}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>$${product.price}</p>
+          <p><strong>Condition:</strong> ${product.condition}</p>
+          <button onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
+        </div>
+      `;
+    }
+
+    $(document).ready(function () {
+      // Fetch products with category "electronics" from backend API
+      $.get(`${API_BASE}/products?category=electronics`, function (data) {
+        const grid = $("#product-grid");
+        grid.empty();
+
+        if (!data || data.length === 0) {
+          grid.html("<p>No products found.</p>");
+        } else {
+          data.forEach(product => grid.append(renderProductCard(product)));
+        }
+      });
+
+      updateCartCount(); // Update cart icon count badge
+    });
+
+    // Dark mode toggle functionality
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      document.querySelectorAll(".card").forEach(el => el.classList.toggle("dark-card"));
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+    }
+  </script>
+</body>
+</html>

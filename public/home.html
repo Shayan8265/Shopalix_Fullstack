@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shopalix – Recommerce Marketplace</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="home.html"><img src="images/logo.png" alt="Shopalix Logo" class="navbar-logo" /></a>
+    <a href="home.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="account.html">Account</a>
+    <a href="chat.html">Support</a>
+    <a href="admin.html">Admin</a>
+    <span class="spacer"></span>
+    <a href="#" class="logout-link" onclick="logout()">Log Out</a>
+    <form class="search-form" onsubmit="return false;">
+      <input type="text" id="search-bar" placeholder="Search products..." />
+      <div id="suggestions" class="suggestions-box"></div>
+    </form>
+    <a href="cart.html" class="cart-link">Cart <span id="cart-count">0</span></a>
+  </nav>
+
+  <!-- Dark Mode Toggle -->
+  <button onclick="toggleDarkMode()" class="dark-toggle">🌓 Toggle Dark Mode</button>
+
+  <!-- Hero Section -->
+  <header class="hero" style="background-image: url('images/hero-banner.jpg');">
+    <h1>Welcome to Shopalix</h1>
+    <p>Your trusted recommerce marketplace — shop sustainably and smartly.</p>
+    <a href="products.html" class="hero-button">Shop Reused. Shop Smart.</a>
+  </header>
+
+  <!-- About Recommerce -->
+  <main>
+    <h2 class="section-title">Why Shop Reused?</h2>
+    <section class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <div class="card">
+        <h3>Save Big</h3>
+        <p>Enjoy up to 70% off compared to new retail prices without compromising quality.</p>
+      </div>
+      <div class="card">
+        <h3>Sustain the Planet</h3>
+        <p>Reduce e-waste and environmental impact by giving products a second life.</p>
+      </div>
+      <div class="card">
+        <h3>Verified Quality</h3>
+        <p>Each item is inspected and tested by professionals before it’s listed for sale.</p>
+      </div>
+    </section>
+
+    <!-- Condition Guide -->
+    <h2 class="section-title">What Do Our Conditions Mean?</h2>
+    <section class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+      <div class="card">
+        <h3>New</h3>
+        <p>Factory sealed or unused item. Original packaging intact.</p>
+      </div>
+      <div class="card">
+        <h3>Like New</h3>
+        <p>Excellent appearance with no visible wear. Fully tested and functional.</p>
+      </div>
+      <div class="card">
+        <h3>Very Good</h3>
+        <p>Minor cosmetic marks only (e.g. faint scratches). Technically perfect and professionally inspected.</p>
+      </div>
+      <div class="card">
+        <h3>Good</h3>
+        <p>Visible signs of use (scratches, scuffs), but works like new.</p>
+      </div>
+      <div class="card">
+        <h3>Acceptable</h3>
+        <p>Heavily used but works perfectly. Great for budget-conscious buyers.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Shopalix. All rights reserved. Recommerce for everyone.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      document.querySelectorAll(".card").forEach(el => el.classList.toggle("dark-card"));
+    }
+
+    function logout() {
+      if (confirm("Are you sure you want to log out?")) {
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
